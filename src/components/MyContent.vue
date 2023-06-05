@@ -61,6 +61,7 @@
         newMessage: '',
         messages: [],
         cardClassImage: '',
+        defaultCardClassImage: require('@/assets/images/catandme.png'),
       };
     },
   
@@ -73,7 +74,7 @@
             title: this.newTitle, // 제목 저장
             text: this.newMessage, // 메시지 저장
             uploadedImage: null, // 업로드된 이미지 초기화
-            uploadedImageUrl: this.cardClassImage, // cardclass 이미지 URL 사용
+            uploadedImageUrl: this.cardClassImage || this.defaultCardClassImage, // cardclass 이미지 URL 사용, 이미지 미업로드시, 디폴트 이미지인 catandme.png가 출력된다.
             editing: false, // 수정 모드 여부
             postedAt: new Date(), // 현재 시간을 할당
           };
