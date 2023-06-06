@@ -65,23 +65,34 @@
       };
     },
   
+    mounted() {
+      // 페이지가 로드될 때, 로컬 스토리지에서 데이터를 가져옴
+      const storedMessages = localStorage.getItem('messages');
+      if (storedMessages) {
+        this.messages = JSON.parse(storedMessages);
+      }
+    },
+  
     methods: {
       // 메시지 추가
       addMessage() {
         if (this.newMessage && this.newTitle) {
           const message = {
-            id: Date.now(), // 고유한 ID 생성
-            title: this.newTitle, // 제목 저장
-            text: this.newMessage, // 메시지 저장
-            uploadedImage: null, // 업로드된 이미지 초기화
-            uploadedImageUrl: this.cardClassImage || this.defaultCardClassImage, // cardclass 이미지 URL 사용, 이미지 미업로드시, 디폴트 이미지인 catandme.png가 출력된다.
-            editing: false, // 수정 모드 여부
-            postedAt: new Date(), // 현재 시간을 할당
+            id: Date.now(),
+            title: this.newTitle,
+            text: this.newMessage,
+            uploadedImage: null,
+            uploadedImageUrl: this.cardClassImage || this.defaultCardClassImage,
+            editing: false,
+            postedAt: new Date(),
           };
-          this.messages.push(message); // 메시지를 배열에 추가
-          this.newTitle = ''; // 입력 필드 초기화
-          this.newMessage = ''; // 입력 필드 초기화
-          this.cardClassImage = ''; // cardclass 이미지 초기화
+          this.messages.push(message);
+          this.newTitle = '';
+          this.newMessage = '';
+          this.cardClassImage = '';
+  
+          // 데이터를 로컬 스토리지에 저장
+          localStorage.setItem('messages', JSON.stringify(this.messages));
         }
       },
   
@@ -110,17 +121,23 @@
   
       // 수정 모드 토글
       toggleEditing(message) {
-        event.preventDefault(); // 기본 동작 막기 (수정 버튼 누를 시 스크롤 올라가는 현상 해결)
-        message.editing = !message.editing; // 수정 모드를 토글
+        event.preventDefault();
+        message.editing = !message.editing;
+  
+        // 데이터를 로컬 스토리지에 저장
+        localStorage.setItem('messages', JSON.stringify(this.messages));
       },
   
       // 메시지 삭제
       deleteMessage(message) {
-        event.preventDefault(); // 기본 동작 막기 (삭제 버튼 누를 시 스크롤 올라가는 현상 해결)
-        const index = this.messages.indexOf(message); // 메시지의 인덱스를 찾음
+        event.preventDefault();
+        const index = this.messages.indexOf(message);
         if (index !== -1) {
-          this.messages.splice(index, 1); // 배열에서 메시지를 제거
+          this.messages.splice(index, 1);
         }
+  
+        // 데이터를 로컬 스토리지에 저장
+        localStorage.setItem('messages', JSON.stringify(this.messages));
       },
   
       // 날짜 및 시간 포맷팅
