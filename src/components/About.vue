@@ -60,7 +60,7 @@
             <hr>
             <h4 class="tech-stac">Tech-Stac</h4>
 			<p>Front-End: Html, CSS, JavaScript, BootStrap, Vue, React<br>
-               Back-End: Node.js, php, Express, Mysql, Postman, Tomcat, Java<br>
+               Back-End: Node.js, Express, Mysql, Firebase, Tomcat, Java<br>
                Common: Git, Github
             </p> 
         </div>
@@ -74,7 +74,7 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item"> <img src="./assets/javamini.png" alt="java"> Java</li>
             <li class="list-group-item"> <img src="./assets/nodemini.png" alt="node.js"> Node.js</li>
-            <li class="list-group-item"> <img src="./assets/phpmini.png" alt="php"> php</li>
+            <li class="list-group-item"> <img src="./assets/firebasemini.png" alt="firebase"> Firebase</li>
           </ul>
         </div>
       </div>

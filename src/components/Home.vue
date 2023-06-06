@@ -67,7 +67,7 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item"> <img src="./assets/javamini.png" alt="java"> Java</li>
             <li class="list-group-item"> <img src="./assets/nodemini.png" alt="node.js"> Node.js</li>
-            <li class="list-group-item"> <img src="./assets/phpmini.png" alt="php"> php</li>
+            <li class="list-group-item"> <img src="./assets/firebasemini.png" alt="firebase"> Firebase</li>
           </ul>
         </div>
       </div>

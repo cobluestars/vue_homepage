@@ -44,7 +44,7 @@ include_once(G5_LIB_PATH.'/popular.lib.php');
     		</ul>
             <?php } ?>
 			<ul id="hd_qnb">
-                <li><a href="/home.vue">홈으로</a></li> <!--4.26 홈 추가, 6.6 홈 변경-->
+                <!-- <li><a href="/home.vue">홈으로</a></li> 4.26 홈 추가, 6.6 홈 변경 -->
 	            <li><a href="<?php echo G5_BBS_URL ?>/faq.php">FAQ</a></li>
 	            <li><a href="<?php echo G5_BBS_URL ?>/qalist.php">Q&A</a></li>
 	            <li><a href="<?php echo G5_BBS_URL ?>/new.php">새글</a></li>
