@@ -1,192 +1,203 @@
 <template>
-    <div class="my-content">
-      <!-- cardclass -->
-      <div class="card" id="cardclass" style="width: 18rem;">
+  <div class="my-content">
+    <!-- cardclass -->
+    <div class="card" id="cardclass" style="width: 18rem;">
+      <span class="upload-image-container">
+        <!-- cardclass 이미지 표시 -->
+        <img :src="cardClassImage || require('@/assets/images/catandme.png')" class="card-img-top" alt="uploadimage" @click="uploadImage('cardclass')">
+        <!-- cardclass 이미지 업로드 인풋 -->
+        <input ref="cardClassImageInput" type="file" id="imageUpload" style="display: none" accept="image/*" @change="handleImageUpload($event, 'cardclass')">
+      </span>
+      <div class="card-body">
+        <!-- 제목 입력 필드 -->
+        <input v-model="newTitle" type="text" id="Card title" placeholder="제목을 입력하세요">
+        <hr>
+        <!-- 메시지 입력 필드 -->
+        <textarea v-model="newMessage" rows="4" cols="50" placeholder="메시지를 입력하세요"></textarea>
+        <!-- 게시 버튼 -->
+        <button type="button" class="btn btn-success" @click="addMessage">게시</button>
+      </div>
+    </div>
+    <hr>
+
+    <!-- cardcontext -->
+    <ul class="card-list">
+      <div class="card" id="cardcontext" v-for="message in cardcontexts" :key="message.id">
         <span class="upload-image-container">
-          <!-- cardclass 이미지 표시 -->
-          <img :src="cardClassImage || require('@/assets/images/catandme.png')" class="card-img-top" alt="uploadimage" @click="uploadImage('cardclass')">
-          <!-- cardclass 이미지 업로드 인풋 -->
-          <input ref="cardClassImageInput" type="file" id="imageUpload" style="display: none" accept="image/*" @change="handleImageUpload($event, 'cardclass')">
+          <!-- 업로드된 이미지 표시 -->
+          <img :src="message.uploadedImageUrl || cardClassImage" class="card-img-top" alt="uploaded-image" @click="message.editing ? uploadImage($event, message) : null">
+          <!-- 이미지 업로드 인풋 -->
+          <input type="file" class="image-upload" style="display: none" accept="image/*" @change="handleImageUpload($event, message)">
         </span>
         <div class="card-body">
-          <!-- 제목 입력 필드 -->
-          <input v-model="newTitle" type="text" id="Card title" placeholder="제목을 입력하세요">
+          <!-- 제목 -->
+          <h5 v-if="!message.editing" class="card-title">{{ message.title }}</h5>
+          <input v-else v-model="message.title" type="text" id="Card title" placeholder="제목을 수정하세요">
           <hr>
-          <!-- 메시지 입력 필드 -->
-          <textarea v-model="newMessage" rows="4" cols="50" placeholder="메시지를 입력하세요"></textarea>
-          <!-- 게시 버튼 -->
-          <button type="button" class="btn btn-success" @click="addMessage">게시</button>
+          <!-- 메시지 -->
+          <p v-if="!message.editing" class="card-text">{{ message.text }}</p>
+          <textarea v-else v-model="message.text" rows="4" cols="50" placeholder="메시지를 수정하세요"></textarea>
+          <!-- 게시 일자 및 시간 -->
+          <div class="card-footer text-muted">
+            {{ formatDate(message.postedAt) }}
+          </div>
+          <!-- 삭제 버튼 -->
+          <a href="#" class="btn btn-dark" id="delete" @click="deleteMessage(message)">삭제</a>
+          <!-- 수정 버튼 -->
+          <a href="#" class="btn btn-secondary" id="modify" @click="toggleEditing(message)">수정</a>
         </div>
       </div>
-      <hr>
-  
-      <!-- cardcontext -->
-      <ul class="card-list">
-        <div class="card" id="cardcontext" v-for="message in messages" :key="message.id">
-          <span class="upload-image-container">
-            <!-- 업로드된 이미지 표시 -->
-            <img :src="message.uploadedImageUrl || cardClassImage" class="card-img-top" alt="uploaded-image" @click="message.editing ? uploadImage($event, message) : null">
-            <!-- 이미지 업로드 인풋 -->
-            <input type="file" class="image-upload" style="display: none" accept="image/*" @change="handleImageUpload($event, message)">
-          </span>
-          <div class="card-body">
-            <!-- 제목 -->
-            <h5 v-if="!message.editing" class="card-title">{{ message.title }}</h5>
-            <input v-else v-model="message.title" type="text" id="Card title" placeholder="제목을 수정하세요">
-            <hr>
-            <!-- 메시지 -->
-            <p v-if="!message.editing" class="card-text">{{ message.text }}</p>
-            <textarea v-else v-model="message.text" rows="4" cols="50" placeholder="메시지를 수정하세요"></textarea>
-            <!-- 게시 일자 및 시간 -->
-            <div class="card-footer text-muted">
-              {{ formatDate(message.postedAt) }}
-            </div>
-            <!-- 삭제 버튼 -->
-            <a href="#" class="btn btn-dark" id="delete" @click="deleteMessage(message)">삭제</a>
-            <!-- 수정 버튼 -->
-            <a href="#" class="btn btn-secondary" id="modify" @click="toggleEditing(message)">수정</a>
-          </div>
-        </div>
-      </ul>
-    </div>
-  </template>
-  
-  <script>
-    import firebase from 'firebase/compat/app';
-    import 'firebase/compat/firestore';
+    </ul>
+  </div>
+</template>
 
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    const firebaseConfig = {
-      apiKey: "AIzaSyC3QdPISsliLrHNuYJ9tjQ-hkEkGiD2g6M",
-      authDomain: "myzzal-43fa5.firebaseapp.com",
-      projectId: "myzzal-43fa5",
-      storageBucket: "myzzal-43fa5.appspot.com",
-      messagingSenderId: "611106972448",
-      appId: "1:611106972448:web:d1a22c5ffd23af7247ad45",
-      measurementId: "G-78YVGJN8SN"
-    };
-    
-    firebase.initializeApp(firebaseConfig); // Firestore를 초기화합니다.
-    const db = firebase.firestore();
+<script>
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
-    export default {
-      name: 'MyContent',
-      
-      data() {
-        return {
-          newTitle: '', // 새로운 제목
-          newMessage: '', // 새로운 내용
-          messages: [], // 메시지 배열
-          cardClassImage: '', // 업로드된 이미지
-          defaultCardClassImage: require('@/assets/images/catandme.png'), // 기본 이미지
-        };
-      },
-
-      mounted() {
-          // Firestore에서 데이터를 가져옵니다.
-          db.collection('MyData')
-            .doc('FNzQk1div2v0G2bx643f')
-            .get()
-            .then((doc) => {
-              if (doc.exists) {
-                const data = doc.data();
-                this.messages.push({
-                  id: doc.id,
-                  title: data.title,
-                  text: data.text,
-                  uploadedImage: null,
-                  uploadedImageUrl: data.uploadedImageUrl,
-                  editing: false,
-                  postedAt: new Date(),
-                });
-              }
-            })
-            .catch((error) => {
-              console.error('데이터를 가져오는 중 에러 발생: ', error);
-            });
-        },
-        
-        methods: {
-          addMessage() {
-            if (this.newMessage && this.newTitle) {
-              const message = {
-                title: this.newTitle,
-                text: this.newMessage,
-                uploadedImage: null,
-                uploadedImageUrl: this.cardClassImage || this.defaultCardClassImage,
-                editing: false,
-                postedAt: new Date(),
-              };
-
-          // Firestore에 데이터를 저장합니다.
-          db.collection('MyData')
-            .doc('FNzQk1div2v0G2bx643f')
-            .set(message)
-            .then(() => {
-              this.messages.push(message);
-              this.newTitle = '';
-              this.newMessage = '';
-              this.cardClassImage = '';
-            })
-            .catch((error) => {
-              console.error('메시지를 추가하는 중 에러 발생: ', error);
-            });
-        }
-      },
-    
-      // 이미지 업로드 처리
-      uploadImage(target) {
-        const inputElement = target === 'cardclass' ? this.$refs.cardClassImageInput : event.target.nextElementSibling;
-        inputElement.click();
-      },
-  
-      // 이미지 업로드 핸들러
-      handleImageUpload(event, target) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            if (target === 'cardclass') {
-              this.cardClassImage = reader.result;
-            } else {
-              target.uploadedImage = reader.result;
-              target.uploadedImageUrl = reader.result;
-            }
-          };
-          reader.readAsDataURL(file);
-        }
-      },
-  
-      // 수정 모드 토글
-      toggleEditing(message) {
-        event.preventDefault();
-        message.editing = !message.editing;
-  
-        // 데이터를 로컬 스토리지에 저장
-        localStorage.setItem('messages', JSON.stringify(this.messages));
-      },
-  
-      // 메시지 삭제
-      deleteMessage(message) {
-        event.preventDefault();
-        const index = this.messages.indexOf(message);
-        if (index !== -1) {
-          this.messages.splice(index, 1);
-        }
-  
-        // 데이터를 로컬 스토리지에 저장
-        localStorage.setItem('messages', JSON.stringify(this.messages));
-      },
-  
-      // 날짜 및 시간 포맷팅
-      formatDate(date) {
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-        return new Date(date).toLocaleDateString(undefined, options);
-      },
-    },
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyC3QdPISsliLrHNuYJ9tjQ-hkEkGiD2g6M",
+    authDomain: "myzzal-43fa5.firebaseapp.com",
+    projectId: "myzzal-43fa5",
+    storageBucket: "myzzal-43fa5.appspot.com",
+    messagingSenderId: "611106972448",
+    appId: "1:611106972448:web:d1a22c5ffd23af7247ad45",
+    measurementId: "G-78YVGJN8SN"
   };
-  </script>
+  
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+export default {
+  name: 'MyContent',
+
+  data() {
+    return {
+      newTitle: '',
+      newMessage: '',
+      cardcontexts: [],
+      cardClassImage: '',
+      defaultCardClassImage: require('@/assets/images/catandme.png'),
+    };
+  },
+
+  mounted() {
+    db.collection('MyData')
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          this.cardcontexts.push({
+            id: doc.id,
+            title: data.title,
+            text: data.text,
+            uploadedImage: null,
+            uploadedImageUrl: data.uploadedImageUrl,
+            editing: false,
+            postedAt: data.postedAt.toDate(),
+          });
+        });
+      })
+      .catch((error) => {
+        console.error('데이터를 가져오는 중 에러 발생: ', error);
+      });
+  },
+
+  methods: {
+    addMessage() {
+      if (this.newMessage && this.newTitle) {
+        const message = {
+          title: this.newTitle,
+          text: this.newMessage,
+          uploadedImage: null,
+          uploadedImageUrl: this.cardClassImage || this.defaultCardClassImage,
+          editing: false,
+          postedAt: new Date(),
+        };
+
+        db.collection('MyData')
+          .add(message)
+          .then((docRef) => {
+            message.id = docRef.id;
+            this.cardcontexts.push(message);
+            this.newTitle = '';
+            this.newMessage = '';
+            this.cardClassImage = '';
+          })
+          .catch((error) => {
+            console.error('메시지를 추가하는 중 에러 발생: ', error);
+          });
+      }
+    },
+
+    uploadImage(target) {
+      const inputElement = target === 'cardclass' ? this.$refs.cardClassImageInput : event.target.nextElementSibling;
+      inputElement.click();
+    },
+
+    handleImageUpload(event, target) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (target === 'cardclass') {
+            this.cardClassImage = reader.result;
+          } else {
+            target.uploadedImage = reader.result;
+            target.uploadedImageUrl = reader.result;
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+
+    toggleEditing(message) {
+      event.preventDefault();
+      message.editing = !message.editing;
+      if (!message.editing) {
+        // 수정이 완료되었을 때 Firestore 데이터 업데이트
+        db.collection('MyData')
+          .doc(message.id)
+          .update({
+            title: message.title,
+            text: message.text,
+            uploadedImageUrl: message.uploadedImageUrl,
+          })
+          .then(() => {
+            console.log('데이터가 성공적으로 업데이트되었습니다.');
+          })
+          .catch((error) => {
+            console.error('데이터를 업데이트하는 중 에러 발생: ', error);
+          });
+      }
+    },
+
+    deleteMessage(message) {
+      event.preventDefault();
+      db.collection('MyData')
+        .doc(message.id)
+        .delete()
+        .then(() => {
+          const index = this.cardcontexts.indexOf(message);
+          if (index !== -1) {
+            this.cardcontexts.splice(index, 1);
+          }
+          console.log('데이터가 성공적으로 삭제되었습니다.');
+        })
+        .catch((error) => {
+          console.error('데이터를 삭제하는 중 에러 발생: ', error);
+        });
+    },
+
+    formatDate(date) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+      return new Date(date).toLocaleDateString(undefined, options);
+    },
+  },
+};
+</script>
   
   <style scoped>
   .my-content {
