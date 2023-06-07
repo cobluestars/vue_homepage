@@ -6,9 +6,8 @@
           <router-link class="router-link" to="/">Home</router-link>
           <router-link class="router-link" to="/About">About</router-link>
           <router-link class="router-link" to="/MyUmzzal">MyUmzzal</router-link>
-          <!-- <router-link class="router-link" to="/KungKungDDa">KungKungDDa</router-link> -->
-          <!--<li><a href="#">게시판</a></li>-->
-       </ul>
+          <a class="router-link" href="http://cobluestar.ivyro.net/board/">게시판</a>
+        </ul>
       </nav>
   
       <header id="header">
@@ -50,19 +49,19 @@
         </div>
   
         <div id="content">
-			<h2>김민우</h2>
+        <h2>김민우</h2>
             <hr>
             <h4 class="content1">Content</h4>
-			<p>서강대학교 물리학과 & 국어국문학과 졸<br>
-			시인, 이야기꾼<br>
+            <p>서강대학교 물리학과 & 국어국문학과 졸<br>
+            시인, 이야기꾼<br>
             프리랜서 일러스트레이터<br>
             목판화, 리놀륨판화가<br>
-			</p>
+            </p>
             <hr>
             <h4 class="tech-stac">Tech-Stac</h4>
-			<p>Front-End: Html, CSS, JavaScript, BootStrap, Vue, React<br>
-               Back-End: Node.js, php, Express, Mysql, Postman, Tomcat, Java<br>
-               Common: Git, Github
+            <p>Front-End: Html, CSS, JavaScript, BootStrap, Vue, React<br>
+              Back-End: Node.js, Express, Mysql, Firebase, Tomcat, Java, php<br>
+              Common: Git, Github
             </p> 
         </div>
   
@@ -75,7 +74,7 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item"> <img src="./assets/javamini.png" alt="java"> Java</li>
             <li class="list-group-item"> <img src="./assets/nodemini.png" alt="node.js"> Node.js</li>
-            <li class="list-group-item"> <img src="./assets/phpmini.png" alt="php"> php</li>
+            <li class="list-group-item"> <img src="./assets/firebasemini.png" alt="firebase"> Firebase</li>
           </ul>
         </div>
       </div>
@@ -124,7 +123,16 @@
   #nav .router-link:hover {
     font-weight: 800;
   }
-    
+
+  #nav li a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  #nav li a:hover {
+    font-weight: 800;
+  }
+
   #header {
     position: sticky;
     top: 45px;

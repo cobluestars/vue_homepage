@@ -6,7 +6,7 @@
           <router-link class="router-link" to="/">Home</router-link>
           <router-link class="router-link" to="/About">About</router-link>
           <router-link class="router-link" to="/MyUmzzal">MyUmzzal</router-link>
-          <!-- <router-link class="router-link" to="/KungKungDDa">KungKungDDa</router-link> -->
+          <a class="router-link" href="http://cobluestar.ivyro.net/board/">게시판</a>
           <!--<li><a href="#">게시판</a></li>-->
        </ul>
       </nav>
@@ -67,7 +67,7 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item"> <img src="./assets/javamini.png" alt="java"> Java</li>
             <li class="list-group-item"> <img src="./assets/nodemini.png" alt="node.js"> Node.js</li>
-            <li class="list-group-item"> <img src="./assets/phpmini.png" alt="php"> php</li>
+            <li class="list-group-item"> <img src="./assets/firebasemini.png" alt="firebase"> Firebase</li>
           </ul>
         </div>
       </div>
@@ -122,6 +122,10 @@
     color: #fff;
     text-decoration: none;
   }
+
+  #nav li a:hover {
+    font-weight: 800;
+  }
   
   #header {
     position: sticky;
@@ -159,7 +163,7 @@
   }
   
   #email:hover {
-    background-color: yellowgreen;
+    background-color: silver;
   }
   </style>
   

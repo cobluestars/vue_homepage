@@ -6,7 +6,7 @@
           <router-link class="router-link" to="/">Home</router-link>
           <router-link class="router-link" to="/About">About</router-link>
           <router-link class="router-link" to="/MyUmzzal">MyUmzzal</router-link>
-          <!-- <router-link class="router-link" to="/KungKungDDa">KungKungDDa</router-link> -->
+          <a class="router-link" href="http://cobluestar.ivyro.net/board/">게시판</a>
           <!--<li><a href="#">게시판</a></li>-->
        </ul>
       </nav>
@@ -91,7 +91,15 @@
   #nav .router-link:hover {
     font-weight: 800;
   }
-  
+
+  #nav li a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  #nav li a:hover {
+    font-weight: 800;
+  }
   
   #header {
     position: sticky;
