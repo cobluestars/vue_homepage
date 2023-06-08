@@ -18,6 +18,11 @@
         <div class="input-group">
           <textarea class="form-control" aria-label="With textarea" v-model="newMessage" rows="4" cols="50" placeholder="메시지를 입력하세요"></textarea>
         </div>
+        <!-- 비밀번호 입력 필드 -->
+        <div class="col-auto" id="pw">
+          <label for="inputPassword" class="visually-hidden">password</label>
+          <input v-model="addMessagePassword" type="password" class="form-control" id="inputPassword" placeholder="비밀번호">
+        </div>
         <!-- 게시 버튼 -->
         <button type="button" id="submit" class="btn btn-success" @click="addMessage">게시</button>
       </div>
@@ -29,7 +34,7 @@
       <!-- 페이지 기능 추가 -->
       <div class="card" id="cardcontext" v-for="message in pagedCardcontexts" :key="message.id">
         <!-- 업로드된 이미지 표시 -->
-        <img :src="message.uploadedImageUrl || cardClassImage" class="card-img-top" alt="uploaded-image" @click="message.editing ? uploadImage($event, message) : null">
+        <img :src="message.uploadedImageUrl || cardClassImage" class="card-img-top" alt="uploaded-image" @click="message.editing ? () => uploadImage($event, message) : null">
         <!-- 이미지 업로드 인풋 -->
         <input type="file" class="image-upload" style="display: none" accept="image/*" @change="handleImageUpload($event, message)">
         <div class="card-body">
@@ -45,13 +50,27 @@
           <div class="card-footer text-muted">
             {{ formatDate(message.postedAt) }}
           </div>
+          <!-- 수정 시 비밀번호 입력 필드 -->
+          <div v-if="message.editing" class="col-auto" id="pw">
+            <label for="inputPassword2" class="visually-hidden">Password</label>
+            <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="Password" ref="passwordInput">
+          </div>
+          <!-- 삭제 시 비밀번호 입력 필드 -->
+          <div v-if="message.deleting" class="col-auto">
+            <label for="inputPassword2" class="visually-hidden">비밀번호</label>
+            <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="비밀번호" ref="passwordInput">
+          </div>
+
           <!-- 삭제 버튼 -->
-          <a href="#" class="btn btn-dark" id="delete" @click="deleteMessage(message)">삭제</a>
+          <a href="#" class="btn btn-dark" id="delete" v-if="!message.editing" @click="deleteMessage(message)">삭제</a>
           <!-- 수정 버튼 -->
-          <a href="#" class="btn btn-secondary" id="modify" @click="toggleEditing(message)">수정</a>
+          <a href="#" class="btn btn-secondary" id="modify" v-if="!message.deleting" @click="toggleEditing(message, $event, addMessagePassword)">수정</a>
+          <!-- 삭제 버튼 -->
+          <!-- <a href="#" class="btn btn-dark" id="delete" @click="deleteMessage(message)">삭제</a> -->
+          <!-- 수정 버튼 -->
+          <!-- <a href="#" class="btn btn-secondary" id="modify" @click="toggleEditing(message, $event, addMessagePassword)">수정</a> -->
         </div>
       </div>
-      <!-- 페이지 기능 추가 -->
     </ul>
 
     <!-- 페이지 기능 추가 -->
@@ -102,6 +121,7 @@ export default {
       cardClassImage: '',
       defaultCardClassImage: require('@/assets/images/catandme.png'),
       currentPage: 1, // 페이지 기능 추가
+      addMessagePassword: '', // 새 메시지 추가용 비밀번호를 저장하는 데이터 속성
     };
   },
 
@@ -133,6 +153,7 @@ export default {
             uploadedImageUrl: data.uploadedImageUrl,
             editing: false,
             postedAt: data.postedAt.toDate(),
+            correctPassword: data.correctPassword, // correctPassword 속성 추가
           });
         });
       })
@@ -142,30 +163,41 @@ export default {
   },
 
   methods: {
-    addMessage() {
-      if (this.newMessage && this.newTitle) {
-        const message = {
-          title: this.newTitle,
-          text: this.newMessage,
-          uploadedImage: null,
-          uploadedImageUrl: this.cardClassImage || this.defaultCardClassImage,
-          editing: false,
-          postedAt: new Date(), //현재 시간
-        };
+    formatDate(date) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+      return new Intl.DateTimeFormat('ko-KR', options).format(date);
+    },
 
-        db.collection('MyData')
-          .add(message)
-          .then((docRef) => {
-            message.id = docRef.id;
-            this.cardcontexts.push(message);
-            this.newTitle = '';
-            this.newMessage = '';
-            this.cardClassImage = '';
-          })
-          .catch((error) => {
-            console.error('메시지를 추가하는 중 에러 발생: ', error);
-          });
+    addMessage() {
+      if (this.addMessagePassword === '') {
+        alert('비밀번호를 입력하세요.');
+        return;
       }
+      const message = {
+        title: this.newTitle,
+        text: this.newMessage,
+        uploadedImage: null,
+        uploadedImageUrl: this.cardClassImage || this.defaultCardClassImage,
+        editing: false,
+        postedAt: new Date(), //현재 시간
+        password: this.addMessagePassword,
+        correctPassword: this.addMessagePassword, // correctPassword 속성 추가
+      };
+
+      db.collection('MyData')
+        .add(message)
+        .then((docRef) => {
+          message.id = docRef.id;
+          this.cardcontexts.unshift(message); // 새로운 게시물을 배열의 맨 앞에 추가
+          this.newTitle = '';
+          this.newTitle = '';
+          this.newMessage = '';
+          this.cardClassImage = '';
+          this.addMessagePassword = ''; // 비밀번호 입력 필드 초기화
+        })
+        .catch((error) => {
+          console.error('메시지를 추가하는 중 에러 발생: ', error);
+        });
     },
 
     uploadImage(target) {
@@ -189,55 +221,82 @@ export default {
       }
     },
 
-    toggleEditing(message) {
-      event.preventDefault();
-      message.editing = !message.editing;
-      if (!message.editing) {
-        // 수정이 완료되었을 때 Firestore 데이터 업데이트
-        db.collection('MyData')
-          .doc(message.id)
-          .update({
-            title: message.title,
-            text: message.text,
-            uploadedImageUrl: message.uploadedImageUrl,
-          })
-          .then(() => {
-            console.log('데이터가 성공적으로 업데이트되었습니다.');
-          })
-          .catch((error) => {
-            console.error('데이터를 업데이트하는 중 에러 발생: ', error);
-          });
-      }
+    toggleEditing(message, event) {
+
+    // 비밀번호 확인 로직 추가
+    message.editing = !message.editing;
+
+    if (message.editing) {
+        // 수정 모드로 전환되었을 때, 비밀번호 필드를 표시하기 위해 Vue.nextTick 사용
+        this.$nextTick(() => {
+          const passwordInput = event.target.closest('.card').querySelector('#inputPassword2');
+          if (passwordInput) {
+            setTimeout(() => {
+              passwordInput.focus();
+            }, 0);
+          }
+        });
+      } else {
+          // 수정이 완료되었을 때 Firestore 데이터 업데이트
+      db.collection('MyData')
+        .doc(message.id)
+        .update({
+          title: message.title,
+          text: message.text,
+          uploadedImageUrl: message.uploadedImageUrl,
+        })
+        .then(() => {
+          console.log('데이터가 성공적으로 업데이트되었습니다.');
+        })
+        .catch((error) => {
+          console.error('데이터를 업데이트하는 중 에러 발생: ', error);
+        });
+    }
     },
 
     deleteMessage(message) {
-      event.preventDefault();
-      db.collection('MyData')
-        .doc(message.id)
-        .delete()
-        .then(() => {
-          const index = this.cardcontexts.indexOf(message);
-          if (index !== -1) {
-            this.cardcontexts.splice(index, 1);
-          }
-          console.log('데이터가 성공적으로 삭제되었습니다.');
-        })
-        .catch((error) => {
-          console.error('데이터를 삭제하는 중 에러 발생: ', error);
-        });
+
+      if (message.deleting) {
+        const index = this.cardcontexts.indexOf(message);
+        if (index > -1) {
+          // 삭제 확인 작업을 위해 confirmDeleteMessage 메서드 호출
+          this.confirmDeleteMessage(message);
+        }
+      } else {
+        message.deleting = true;
+      }
     },
 
-    formatDate(date) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-      return new Date(date).toLocaleDateString(undefined, options);
+    confirmDeleteMessage(message) {
+        const inputPassword = message.password; // 입력한 비밀번호
+        const correctPassword = message.correctPassword; // 정확한 비밀번호
+
+        if (inputPassword === correctPassword) {
+        const index = this.cardcontexts.indexOf(message);
+        if (index > -1) {
+          this.cardcontexts.splice(index, 1);
+
+          db.collection('MyData')
+            .doc(message.id)
+            .delete()
+            .then(() => {
+              console.log('데이터가 성공적으로 삭제되었습니다.');
+            })
+            .catch((error) => {
+              console.error('데이터를 삭제하는 중 에러 발생: ', error);
+            });
+        }
+      } else {
+        alert('비밀번호가 일치하지 않습니다.');
+      }
     },
 
-        // 페이지 이동
+    // 페이지 이동
     goToPage(page) {
       this.currentPage = page;
       window.scrollTo(0, 0);
     },
-  },
+  }
 };
 </script>
   
@@ -258,6 +317,12 @@ export default {
   #imageclick {
     margin-left: 12px;
     margin-bottom: 20px;
+  }
+
+  #pw {
+    float: left;
+    width: 160px;
+    margin-top: 4px;
   }
 
   #submit {
