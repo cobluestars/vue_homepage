@@ -49,19 +49,19 @@
         </div>
   
         <div id="content">
-        <h2>김민우</h2>
-            <hr>
-            <h4 class="content1">Content</h4>
+            <h2>김민우</h2>
+                  <hr>
+                  <h4 class="content1">Content</h4>
             <p>서강대학교 물리학과 & 국어국문학과 졸<br>
             시인, 이야기꾼<br>
-            프리랜서 일러스트레이터<br>
-            목판화, 리놀륨판화가<br>
+                  프리랜서 일러스트레이터<br>
+                  목판화, 리놀륨판화가<br>
             </p>
             <hr>
             <h4 class="tech-stac">Tech-Stac</h4>
             <p>Front-End: Html, CSS, JavaScript, BootStrap, Vue, React<br>
-              Back-End: Node.js, Express, Mysql, Firebase, Tomcat, Java, php<br>
-              Common: Git, Github
+               Back-End: Node.js, Express, Mysql, Firebase, Tomcat, Java<br>
+               Common: Git, Github
             </p> 
         </div>
   
