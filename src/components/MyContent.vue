@@ -31,12 +31,13 @@
 
     <!-- cardcontext -->
     <ul class="card-list">
-      <!-- 페이지 기능 추가 -->
       <div class="card" id="cardcontext" v-for="message in pagedCardcontexts" :key="message.id">
-        <!-- 업로드된 이미지 표시 -->
-        <img :src="message.uploadedImageUrl || cardClassImage" class="card-img-top" alt="uploaded-image" @click="message.editing ? () => uploadImage($event, message) : null">
-        <!-- 이미지 업로드 인풋 -->
-        <input type="file" class="image-upload" style="display: none" accept="image/*" @change="handleImageUpload($event, message)">
+        <div class="image-container">
+          <!-- 업로드된 이미지 표시 -->
+          <img :src="message.uploadedImageUrl || cardClassImage" class="card-img-top" alt="uploaded-image" @click="message.editing ? uploadImage($event, message) : null">
+          <!-- 이미지 업로드 인풋 -->
+          <input type="file" class="image-upload" style="display: none" accept="image/*" @change="handleImageUpload($event, message)">
+        </div>
         <div class="card-body">
           <span v-if="message.editing" id="imageclick2" class="badge text-bg-secondary">이미지 클릭 시 이미지를 업로드합니다.</span>
           <!-- 제목 -->
@@ -54,17 +55,19 @@
           <div v-if="message.editing" class="col-auto" id="pw">
             <label for="inputPassword2" class="visually-hidden">Password</label>
             <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="Password" ref="passwordInput">
+            <span v-if="message.editing" class="badge text-bg-info" id="editingcancel">수정 취소: 틀린 비밀번호 입력 후 수정 버튼을 누르세요.</span>
           </div>
           <!-- 삭제 시 비밀번호 입력 필드 -->
-          <div v-if="message.deleting" class="col-auto">
-            <label for="inputPassword2" class="visually-hidden">비밀번호</label>
+          <div v-if="message.deleting" class="col-auto" id="pw">
+            <label for="inputPassword2" class="visually-hidden">Password</label>
             <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="비밀번호" ref="passwordInput">
+            <span v-if="message.deleting" class="badge text-bg-info" id="deletingcancel">삭제 취소: 틀린 비밀번호 입력 후 삭제 버튼을 누르세요.</span>
           </div>
 
           <!-- 삭제 버튼 -->
           <a href="#" class="btn btn-dark" id="delete" v-if="!message.editing" @click="deleteMessage(message)">삭제</a>
           <!-- 수정 버튼 -->
-          <a href="#" class="btn btn-secondary" id="modify" v-if="!message.deleting" @click="toggleEditing(message, $event, addMessagePassword)">수정</a>
+          <a href="#" class="btn btn-secondary" id="modify" v-if="!message.deleting" @click="toggleEditing(message, $event)">수정</a>
           <!-- 삭제 버튼 -->
           <!-- <a href="#" class="btn btn-dark" id="delete" @click="deleteMessage(message)">삭제</a> -->
           <!-- 수정 버튼 -->
@@ -222,11 +225,16 @@ export default {
     },
 
     toggleEditing(message, event) {
+      const previousScrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
-    // 비밀번호 확인 로직 추가
-    message.editing = !message.editing;
+      // 비밀번호 확인 로직 추가
+      const inputPassword = message.password; // 입력한 비밀번호
+      const correctPassword = message.correctPassword; // 정확한 비밀번호
 
-    if (message.editing) {
+      if (!message.editing) {
+        // 수정 모드로 전환
+        message.editing = true;
+
         // 수정 모드로 전환되었을 때, 비밀번호 필드를 표시하기 위해 Vue.nextTick 사용
         this.$nextTick(() => {
           const passwordInput = event.target.closest('.card').querySelector('#inputPassword2');
@@ -236,59 +244,107 @@ export default {
             }, 0);
           }
         });
+
+        // 스크롤 위치 복원
+        this.restoreScrollPosition(previousScrollTop);
       } else {
+        if (inputPassword === correctPassword) {
+          // 수정 완료
+          message.editing = false;
+
           // 수정이 완료되었을 때 Firestore 데이터 업데이트
-      db.collection('MyData')
-        .doc(message.id)
-        .update({
-          title: message.title,
-          text: message.text,
-          uploadedImageUrl: message.uploadedImageUrl,
-        })
-        .then(() => {
-          console.log('데이터가 성공적으로 업데이트되었습니다.');
-        })
-        .catch((error) => {
-          console.error('데이터를 업데이트하는 중 에러 발생: ', error);
-        });
-    }
+          db.collection('MyData')
+            .doc(message.id)
+            .update({
+              title: message.title,
+              text: message.text,
+              uploadedImageUrl: message.uploadedImageUrl,
+            })
+            .then(() => {
+              // 스크롤 위치 복원
+              this.restoreScrollPosition(previousScrollTop);
+              console.log('데이터가 성공적으로 업데이트되었습니다.');
+            })
+            .catch((error) => {
+              console.error('데이터를 업데이트하는 중 에러 발생: ', error);
+            });
+        } else {
+          alert('비밀번호가 일치하지 않습니다.');
+          // 수정 모드 종료
+          message.editing = false;
+          // 입력된 비밀번호 초기화
+          message.password = '';
+          // 스크롤 위치 복원
+          this.restoreScrollPosition(previousScrollTop);
+        }
+      }
     },
+      //틀린 비밀번호를 입력했음에도, 같은 페이지 내에서는 수정이 되어 보이는 버그 해결해야 함.
 
     deleteMessage(message) {
+      const previousScrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      this.restoreScrollPosition(previousScrollTop);
 
       if (message.deleting) {
         const index = this.cardcontexts.indexOf(message);
         if (index > -1) {
+          this.restoreScrollPosition(previousScrollTop);
           // 삭제 확인 작업을 위해 confirmDeleteMessage 메서드 호출
-          this.confirmDeleteMessage(message);
+          this.confirmDeleteMessage(message, previousScrollTop)
+            .then(() => {
+              // 삭제 작업이 완료된 후 스크롤 위치 복원
+              this.restoreScrollPosition(previousScrollTop);
+            })
+            .catch(() => {
+              // 삭제 작업이 실패한 경우에도 스크롤 위치 복원
+              this.restoreScrollPosition(previousScrollTop);
+            });
         }
       } else {
         message.deleting = true;
       }
     },
 
-    confirmDeleteMessage(message) {
+    confirmDeleteMessage(message, previousScrollTop) {
+      return new Promise((resolve, reject) => {
         const inputPassword = message.password; // 입력한 비밀번호
         const correctPassword = message.correctPassword; // 정확한 비밀번호
 
         if (inputPassword === correctPassword) {
-        const index = this.cardcontexts.indexOf(message);
-        if (index > -1) {
-          this.cardcontexts.splice(index, 1);
+          const index = this.cardcontexts.indexOf(message);
+          if (index > -1) {
+            this.cardcontexts.splice(index, 1);
 
-          db.collection('MyData')
-            .doc(message.id)
-            .delete()
-            .then(() => {
-              console.log('데이터가 성공적으로 삭제되었습니다.');
-            })
-            .catch((error) => {
-              console.error('데이터를 삭제하는 중 에러 발생: ', error);
-            });
+            db.collection('MyData')
+              .doc(message.id)
+              .delete()
+              .then(() => {
+                console.log('데이터가 성공적으로 삭제되었습니다.');
+                resolve();
+              })
+              .catch((error) => {
+                console.error('데이터를 삭제하는 중 에러 발생: ', error);
+                reject();
+              })
+              .finally(() => {
+                // 삭제 작업이 완료된 후 스크롤 위치 복원
+                this.restoreScrollPosition(previousScrollTop);
+              });
+          }
+        } else {
+          alert('비밀번호가 일치하지 않습니다.');
+          message.deleting = false; // 삭제 모드 종료
+          message.password = ''; // 입력된 비밀번호 초기화
+          reject();
         }
-      } else {
-        alert('비밀번호가 일치하지 않습니다.');
-      }
+      });
+    },
+
+    // 스크롤 위치 복원
+    restoreScrollPosition(previousScrollTop) {
+      setTimeout(() => {
+        window.scrollTo(0, previousScrollTop);
+      }, 100); // 100ms 딜레이
     },
 
     // 페이지 이동
@@ -377,15 +433,27 @@ export default {
   }
 
   #modify {
+    position: relative;
     float: right;
     margin: 5px;
   }
   
   #delete {
+    position: relative;
     float: right;
     margin: 5px;
   }
   
+  #editingcancel {
+    position: relative;
+    margin: auto;
+  }
+
+  #deletingcancel {
+    position: relative;
+    margin: auto;
+  }
+
   li {
     margin-bottom: 10px;
   }
