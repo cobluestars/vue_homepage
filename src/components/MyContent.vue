@@ -31,12 +31,13 @@
 
     <!-- cardcontext -->
     <ul class="card-list">
-      <!-- 페이지 기능 추가 -->
       <div class="card" id="cardcontext" v-for="message in pagedCardcontexts" :key="message.id">
-        <!-- 업로드된 이미지 표시 -->
-        <img :src="message.uploadedImageUrl || cardClassImage" class="card-img-top" alt="uploaded-image" @click="message.editing ? () => uploadImage($event, message) : null">
-        <!-- 이미지 업로드 인풋 -->
-        <input type="file" class="image-upload" style="display: none" accept="image/*" @change="handleImageUpload($event, message)">
+        <div class="image-container">
+          <!-- 업로드된 이미지 표시 -->
+          <img :src="message.uploadedImageUrl || cardClassImage" class="card-img-top" alt="uploaded-image" @click="message.editing ? uploadImage($event, message) : null">
+          <!-- 이미지 업로드 인풋 -->
+          <input type="file" class="image-upload" style="display: none" accept="image/*" @change="handleImageUpload($event, message)">
+        </div>
         <div class="card-body">
           <span v-if="message.editing" id="imageclick2" class="badge text-bg-secondary">이미지 클릭 시 이미지를 업로드합니다.</span>
           <!-- 제목 -->
@@ -53,22 +54,20 @@
           <!-- 수정 시 비밀번호 입력 필드 -->
           <div v-if="message.editing" class="col-auto" id="pw">
             <label for="inputPassword2" class="visually-hidden">Password</label>
-            <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="Password" ref="passwordInput">
+            <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="비밀번호" ref="passwordInput">
+            <span v-if="message.editing" class="badge text-bg-info" id="editingcancel">수정 취소: 틀린 비밀번호 입력 후 수정 버튼을 누르세요.</span>
           </div>
           <!-- 삭제 시 비밀번호 입력 필드 -->
-          <div v-if="message.deleting" class="col-auto">
-            <label for="inputPassword2" class="visually-hidden">비밀번호</label>
+          <div v-if="message.deleting" class="col-auto" id="pw">
+            <label for="inputPassword2" class="visually-hidden">Password</label>
             <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="비밀번호" ref="passwordInput">
+            <span v-if="message.deleting" class="badge text-bg-info" id="deletingcancel">삭제 취소: 틀린 비밀번호 입력 후 삭제 버튼을 누르세요.</span>
           </div>
 
           <!-- 삭제 버튼 -->
           <a href="#" class="btn btn-dark" id="delete" v-if="!message.editing" @click="deleteMessage(message)">삭제</a>
           <!-- 수정 버튼 -->
-          <a href="#" class="btn btn-secondary" id="modify" v-if="!message.deleting" @click="message.editing = true; toggleEditing(message, $event, addMessagePassword)">수정</a>
-          <!-- 삭제 버튼 -->
-          <!-- <a href="#" class="btn btn-dark" id="delete" @click="deleteMessage(message)">삭제</a> -->
-          <!-- 수정 버튼 -->
-          <!-- <a href="#" class="btn btn-secondary" id="modify" @click="toggleEditing(message, $event, addMessagePassword)">수정</a> -->
+          <a href="#" class="btn btn-secondary" id="modify" v-if="!message.deleting" @click="toggleEditing(message, $event)">수정</a>
         </div>
       </div>
     </ul>
@@ -221,30 +220,62 @@ export default {
       }
     },
 
+    cancelDatabaseUpdate(message) {
+      // 수정 취소 시 이전 데이터로 복원
+      message.title = message.previousTitle;
+      message.text = message.previousText;
+      message.uploadedImageUrl = message.previousUploadedImageUrl;
+
+      // Vue.js에서 데이터 업데이트를 감지하고 화면을 업데이트하도록 호출
+      this.$forceUpdate();
+    },
+
     toggleEditing(message, event) {
-      const previousScrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      const previousScrollTop = document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+      // 이전 값 저장
+      if (!message.previousTitle) {
+        message.previousTitle = message.title;
+      }
+      if (!message.previousText) {
+        message.previousText = message.text;
+      }
+      if (!message.previousUploadedImageUrl) {
+        message.previousUploadedImageUrl = message.uploadedImageUrl;
+      }
+        
+      // Vue.js에서 데이터 업데이트를 감지하고 화면을 업데이트하도록 호출
+      this.$forceUpdate();
 
       // 비밀번호 확인 로직 추가
       const inputPassword = message.password; // 입력한 비밀번호
       const correctPassword = message.correctPassword; // 정확한 비밀번호
 
-      if (message.created) {
-        // 게시물이 생성된 직후에는 업데이트를 실행하지 않음
-        message.editing = !message.editing;
-      } else if (inputPassword === correctPassword) {
-        message.editing = !message.editing;
+      if (!message.editing) {
+        // 수정 모드로 전환
+        message.editing = true;
 
-        if (message.editing) {
-          // 수정 모드로 전환되었을 때, 비밀번호 필드를 표시하기 위해 Vue.nextTick 사용
-          this.$nextTick(() => {
-            const passwordInput = event.target.closest('.card').querySelector('#inputPassword2');
-            if (passwordInput) {
-              setTimeout(() => {
-                passwordInput.focus();
-              }, 0);
-            }
-          });
-        } else {
+        // 수정 모드로 전환되었을 때, 비밀번호 필드를 표시하기 위해 Vue.nextTick 사용
+        this.$nextTick(() => {
+          const passwordInput = event.target.closest('.card').querySelector('#inputPassword2');
+          if (passwordInput) {
+            setTimeout(() => {
+              passwordInput.focus();
+            }, 0);
+          }
+        });
+
+        // 스크롤 위치 복원
+        this.restoreScrollPosition(previousScrollTop);
+
+      } else {
+        if (inputPassword === correctPassword) {
+          // 수정 완료
+          message.editing = false;
+
+          // 스크롤 위치 복원
+          this.restoreScrollPosition(previousScrollTop);
+
           // 수정이 완료되었을 때 Firestore 데이터 업데이트
           db.collection('MyData')
             .doc(message.id)
@@ -253,40 +284,59 @@ export default {
               text: message.text,
               uploadedImageUrl: message.uploadedImageUrl,
             })
+
             .then(() => {
-              console.log('데이터가 성공적으로 업데이트되었습니다.');
-              // 스크롤 위치 복원 (딜레이 추가)
-              setTimeout(() => {
-                window.scrollTo(0, previousScrollTop);
-              }, 100); // 100ms 딜레이
+              // 스크롤 위치 복원
               this.restoreScrollPosition(previousScrollTop);
+              console.log('데이터가 성공적으로 업데이트되었습니다.');
             })
             .catch((error) => {
+
+              // 수정 취소
+              this.cancelDatabaseUpdate(message);
+
+              // 화면 업데이트
+              this.$nextTick(() => {
+                  this.$forceUpdate();
+              });
+
+              // 스크롤 위치 복원
+              this.restoreScrollPosition(previousScrollTop);
               console.error('데이터를 업데이트하는 중 에러 발생: ', error);
             });
+        } else {
+          // 스크롤 위치 복원
+          this.restoreScrollPosition(previousScrollTop);
+
+          alert('비밀번호가 일치하지 않습니다. 수정 모드를 종료합니다.');
+          // 수정 모드 종료
+          message.editing = false;
+          // 입력된 비밀번호 초기화
+          message.password = '';
+
+          // 수정 취소
+          this.cancelDatabaseUpdate(message);
+
+          // 화면 업데이트
+          this.$nextTick(() => {
+              this.$forceUpdate();
+          });
+
         }
-      } else {
-        if (!message.passwordMismatch) {
-          message.passwordMismatch = true;
-          setTimeout(() => {
-            message.passwordMismatch = false;
-          }, 3000); // 3초 후에 비밀번호 불일치 상태를 초기화
-        }
-        // 스크롤 위치 복원 (딜레이 추가)
-        setTimeout(() => {
-          window.scrollTo(0, previousScrollTop);
-        }, 100); // 100ms 딜레이
       }
     },
+    //틀린 비밀번호를 입력했음에도, 같은 페이지 내에서는 수정이 되어 보이는 버그 해결해야 함.
 
     deleteMessage(message) {
-      const previousScrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      const previousScrollTop = document.documentElement.scrollTop || document.body.scrollTop || 0;
+    
+      // 스크롤 위치 복원
       this.restoreScrollPosition(previousScrollTop);
 
       if (message.deleting) {
+  
         const index = this.cardcontexts.indexOf(message);
         if (index > -1) {
-          this.restoreScrollPosition(previousScrollTop);
           // 삭제 확인 작업을 위해 confirmDeleteMessage 메서드 호출
           this.confirmDeleteMessage(message, previousScrollTop)
             .then(() => {
@@ -298,6 +348,7 @@ export default {
               this.restoreScrollPosition(previousScrollTop);
             });
         }
+    
       } else {
         message.deleting = true;
       }
@@ -330,7 +381,12 @@ export default {
               });
           }
         } else {
-          alert('비밀번호가 일치하지 않습니다.');
+          // 스크롤 위치 복원
+          this.restoreScrollPosition(previousScrollTop);
+
+          alert('비밀번호가 일치하지 않습니다. 삭제 모드를 종료합니다.');
+          message.deleting = false; // 삭제 모드 종료
+          message.password = ''; // 입력된 비밀번호 초기화
           reject();
         }
       });
@@ -340,7 +396,7 @@ export default {
     restoreScrollPosition(previousScrollTop) {
       setTimeout(() => {
         window.scrollTo(0, previousScrollTop);
-      }, 100); // 100ms 딜레이
+      }, 5);  //스크롤이 위로 올라갔다 내려오는 현상을(스크롤 복원) 0.005초 내에 구현
     },
 
     // 페이지 이동
@@ -381,22 +437,6 @@ export default {
     float: right;
   }
   
-  .upload-image-container {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-  }
-  
-  .upload-image-container input[type="file"] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-  }
-  
   textarea {
     width: 100%;
     padding: 10px;
@@ -429,15 +469,27 @@ export default {
   }
 
   #modify {
+    position: relative;
     float: right;
     margin: 5px;
   }
   
   #delete {
+    position: relative;
     float: right;
     margin: 5px;
   }
   
+  #editingcancel {
+    position: relative;
+    margin: auto;
+  }
+
+  #deletingcancel {
+    position: relative;
+    margin: auto;
+  }
+
   li {
     margin-bottom: 10px;
   }
