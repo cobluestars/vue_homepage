@@ -88,13 +88,14 @@
     </ul>
 
     <!--검색 기능 추가-->
-    <div id="f5">
+    <!-- <div id="f5">
     <span class="badge rounded-pill text-bg-light">새로고침: "/새로고침" 입력 후 검색 클릭</span>
-    </div>
+    </div> -->
 
     <div id="search" class="input-group mb-3">
       <button class="btn btn-outline-secondary" type="button" id="button-addon1" @click="Search">검색</button>
-      <input v-model="keyword" type="text" class="form-control" placeholder="검색어를 입력하세요" aria-label="Example text with button addon" aria-describedby="button-addon1">
+      <input v-model="keyword" type="text" class="form-control" placeholder="검색어 입력" aria-label="Example text with button addon" aria-describedby="button-addon1">
+      <button class="btn btn-outline-secondary" type="button" id="button-addon1" @click="F5"> F5 </button>
     </div>
     <!-- 페이지 기능 추가 -->
     <nav aria-label="Page navigation example">
@@ -437,13 +438,19 @@ export default {
       }, 5);  //스크롤이 위로 올라갔다 내려오는 현상을(스크롤 복원) 0.005초 내에 구현
     },
 
+    //새로고침
+    F5() {
+      location.reload();
+      return;
+    },
+
     //검색
     Search() {
-      if (this.keyword === '/새로고침') {
-        // 키워드가 '/새로고침'이면 페이지를 새로고침
-        location.reload();
-        return;
-      }
+      // if (this.keyword === '/새로고침') {
+      //   // 키워드가 '/새로고침'이면 페이지를 새로고침
+      //   location.reload();
+      //   return;
+      // }
 
       const searchKeyword = this.keyword.toLowerCase();
       
@@ -573,7 +580,7 @@ export default {
   }
 
   #search {
-    width: 250px;
+    width: 300px;
     margin: 0 auto;
   }
 
