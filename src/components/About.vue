@@ -14,13 +14,13 @@
         <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
             <div class="carousel-item active">
-              <img src="./assets/images/catandme.png" class="d-block w-100" alt="cam" height="600px">
+              <img src="./assets/images/catandme.png" class="d-block w-100" alt="cam">
             </div>
             <div class="carousel-item">
-              <img src="./assets/images/catandme2.png" class="d-block w-100" alt="cam2" height="600px">
+              <img src="./assets/images/catandme2.png" class="d-block w-100" alt="cam2">
             </div>
             <div class="carousel-item">
-              <img src="./assets/images/catandme3.png" class="d-block w-100" alt="cam3" height="600px">
+              <img src="./assets/images/catandme3.png" class="d-block w-100" alt="cam3">
             </div>
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
@@ -35,7 +35,7 @@
       </header>
   
       <div id="container">
-        <div class="card" style="width: 200px;">
+        <div class="card" id="card1">
           <img class="card-img-top" src="./assets/images/catandme2.png" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">Front-End</h5>
@@ -44,29 +44,39 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item"> <img src="./assets/android-icon-36x36.png" alt="vue"> Vue</li>
             <li class="list-group-item"> <img src="./assets/android-icon-36x361.png" alt="react"> React</li>
-            <li class="list-group-item"> <img src="./assets/android-icon-36x362.png" alt="js"> JavaScript</li>
+            <li class="list-group-item" v-if="isDesktop">
+                <img src="./assets/android-icon-36x362.png" alt="js"> JavaScript
+            </li>
+            <li class="list-group-item" v-else>
+                <img src="./assets/android-icon-36x362.png" alt="js"> Java<br>Script
+            </li>
           </ul>
         </div>
   
         <div id="content">
-            <h2>김민우</h2>
-                  <hr>
-                  <h4 class="content1">Content</h4>
-            <p>서강대학교 물리학과 & 국어국문학과 졸<br>
-            시인, 이야기꾼<br>
-                  프리랜서 일러스트레이터<br>
-                  목판화, 리놀륨판화가<br>
-            </p>
+            <h3>김민우</h3>
             <hr>
-            <h4 class="tech-stac">Tech-Stac</h4>
-            <p>Front-End: Html, CSS, JavaScript, BootStrap, Vue, React<br>
-               Back-End: Node.js, Express, Mysql, Firebase, Tomcat, Java<br>
-               Common: Git, Github
-            </p> 
+            <p class="content-title">Content</p>
+            <div class="content-content">
+               <ul>
+                <li>서강대학교 물리학과 & 국어국문학과 졸</li>
+                <li>시인, 이야기꾼</li>
+                <li>일러스트레이터</li>
+               </ul>
+            </div>
+            <hr>
+            <p class="tech-stac">Tech-Stac</p>
+            <div class="tech-stac-content">
+              <ul>
+                <li class="tsc">Front-End:<br>Html, CSS, JS, BootStrap, Vue, React</li>
+                <li class="tsc">Back-End:<br> Node.js, Express, Mysql, Firebase, Tomcat, Java</li>
+                <li class="tsc">Common:<br> Git, Github</li>
+              </ul>
+            </div> 
         </div>
   
-        <div class="card" style="width: 200px;">
-          <img class="card-img-top" src="./assets/images/catandme3.png" alt="Card image cap">
+      <div class="card" id="card2">
+        <img class="card-img-top" src="./assets/images/catandme3.png" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">Back-End</h5>
             <p class="card-text">Current Using Tech-Stac</p>
@@ -74,7 +84,12 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item"> <img src="./assets/javamini.png" alt="java"> Java</li>
             <li class="list-group-item"> <img src="./assets/nodemini.png" alt="node.js"> Node.js</li>
-            <li class="list-group-item"> <img src="./assets/firebasemini.png" alt="firebase"> Firebase</li>
+            <li class="list-group-item" v-if="isDesktop">
+              <img src="./assets/firebasemini.png" alt="firebase"> Firebase
+            </li>
+            <li class="list-group-item" v-else>
+              <img src="./assets/firebasemini.png" alt="firebase"> Fire<br>base
+            </li>
           </ul>
         </div>
       </div>
@@ -87,14 +102,27 @@
   <script>
   export default {
     name: 'MyPage',
+    mounted() {
+      if (window.innerWidth >= 768) {
+        this.isDesktop = true;
+      } else {
+        this.isDesktop = false;
+      }
+    },
+    data() {
+      return {
+        isDesktop: false,
+      };
+    },
   };
   </script>
   
   <style scoped>
+  @media screen and (min-width: 768px) {
   body {
-      box-sizing: border-box;
-      width: 940px;
-      margin: 0px auto;
+    box-sizing: border-box;
+    width: 940px;
+    margin: 0px auto;
   }
   /* body {
     width: 940px;
@@ -123,7 +151,7 @@
   #nav .router-link:hover {
     font-weight: 800;
   }
-
+  
   #nav li a {
     color: #fff;
     text-decoration: none;
@@ -132,7 +160,7 @@
   #nav li a:hover {
     font-weight: 800;
   }
-
+  
   #header {
     position: sticky;
     top: 45px;
@@ -145,13 +173,10 @@
     margin-top: 40px;
   }
   
-  #header > h1 {
-    margin: 0px;
-  }
-  
   .card {
     float: left;
     padding: 20px;
+    width: 200px;
   }
   
   #content {
@@ -163,26 +188,105 @@
     border: 1px solid rgb(186, 186, 186);
     border-radius: 5px;
   }
+}
 
-  .content1 {
-    font-weight: 400;
+@media screen and (max-width: 767px) {
+  
+  body {
+    margin: 0 auto;
+    width: 100%;
   }
 
-  .tech-stac{
-    font-weight: 400;
+  #nav {
+    width: 100%;
+    background: #000;
+    position: fixed;
+    height: 50px;
+    padding-top: 10px;
+    top: 0px;
+    z-index: 2;
   }
 
-  #explainfavicon {
+  #nav .router-link {
     text-align: center;
+    margin-left: 2.2em;
+    display: inline;
+    list-style: none;
+    text-decoration: none;
+    font-size: small;
+    color: white;
   }
   
-  #email {
+  #nav .router-link:hover {
     font-weight: 800;
   }
-  
-  #email:hover {
-    background-color: yellowgreen;
+
+  #header {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+    margin-top: 48px;
+  }
+
+  #card1 {
+    float: left;
+    padding: 20px;
+    width: 30%; /* Adjust the width as needed */
+    font-size: xx-small;
+    text-align: center;
+  }
+
+  #card2 {
+    float: right;
+    padding: 20px;
+    width: 30%; /* Adjust the width as needed */
+    font-size: xx-small;
+    text-align: center;
+
   }
   
+  .card-title {
+    text-align: center;
+    font-size: small;
+  }
+
+  .card-text {
+    text-align: center;
+    font-size: x-small;
+  }
+  
+  #content {
+    width: 40%;
+    float: left;
+    padding: 20px;
+    margin-bottom: 20px;
+    margin: 0 0 20px 0; /* Adjust the margin as needed */
+    border: 1px solid rgb(186, 186, 186);
+    border-radius: 5px;
+
+    font-size: xx-small;
+  }
+
+  #content .content-title {
+    font-size: medium;
+    margin-top: 1px;
+  }
+
+  #content .content-content {
+    margin-left: -24px;
+  }
+
+  #content .tech-stac {
+    font-size: medium;
+    margin-top: 1px;
+  }
+  #content .tech-stac-content {
+    margin-left: -24px;
+  }
+  #content .tsc {
+    margin: 2px;
+  }
+}
+
   </style>
   
