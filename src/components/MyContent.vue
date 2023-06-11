@@ -446,6 +446,12 @@ export default {
       }
 
       const searchKeyword = this.keyword.toLowerCase();
+      
+      // 키워드가 비어있다가 무언가 입력되었을 때, 검색 기능을 실행하지 않음
+      if (searchKeyword === '') {
+        return;
+      }
+      
       const filteredCardcontexts = this.cardcontexts.filter((message) => {
         const lowerCaseTitle = message.title.toLowerCase();
         const lowerCaseText = message.text.toLowerCase();
