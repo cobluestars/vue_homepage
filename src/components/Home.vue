@@ -40,17 +40,12 @@
             <img class="card-img-top" src="./assets/images/catandme2.png" alt="Card image cap">
             <div class="card-body">
               <h5 class="card-title">Front-End</h5>
-              <p class="card-text">Current Using Tech-Stac</p>
+              <p class="card-text">Current Using</p>
             </div>
             <ul class="list-group list-group-flush">
-              <li class="list-group-item"> <img src="./assets/android-icon-36x36.png" alt="vue"> Vue</li>
-              <li class="list-group-item"> <img src="./assets/android-icon-36x361.png" alt="react"> React</li>
-              <li class="list-group-item" v-if="isDesktop">
-                 <img src="./assets/android-icon-36x362.png" alt="js"> JavaScript
-              </li>
-              <li class="list-group-item" v-else>
-                 <img src="./assets/android-icon-36x362.png" alt="js"> Java<br>Script
-              </li>
+              <li class="list-group-item"><img src="https://img.shields.io/badge/vue.js-4FC08D?style=flat-square&logo=vue.js&logoColor=white"></li>
+              <li class="list-group-item"><img src="https://img.shields.io/badge/react-61DAFB?style=flat-square&logo=react&logoColor=black"></li>
+              <li class="list-group-item"><img src="https://img.shields.io/badge/bootstrap-7952B3?style=flat-square&logo=bootstrap&logoColor=white"></li>
             </ul>
           </div>
     
@@ -74,17 +69,12 @@
             <img class="card-img-top" src="./assets/images/catandme3.png" alt="Card image cap">
             <div class="card-body">
               <h5 class="card-title">Back-End</h5>
-              <p class="card-text">Current Using Tech-Stac</p>
+              <p class="card-text">Current Using</p>
             </div>
             <ul class="list-group list-group-flush">
-              <li class="list-group-item"> <img src="./assets/javamini.png" alt="java"> Java</li>
-              <li class="list-group-item"> <img src="./assets/nodemini.png" alt="node.js"> Node.js</li>
-              <li class="list-group-item" v-if="isDesktop">
-                <img src="./assets/firebasemini.png" alt="firebase"> Firebase
-              </li>
-              <li class="list-group-item" v-else>
-                <img src="./assets/firebasemini.png" alt="firebase"> Fire<br>base
-              </li>
+              <li class="list-group-item"><img src="https://img.shields.io/badge/java-007396?style=flat-square&logo=java&logoColor=white"/></li>
+              <li class="list-group-item"><img src="https://img.shields.io/badge/node.js-339933?style=flat-square&logo=Node.js&logoColor=white"></li>
+              <li class="list-group-item"><img src="https://img.shields.io/badge/firebase-FFCA28?style=flat-square&logo=firebase&logoColor=white"></li>
             </ul>
           </div>
         </div>

@@ -39,17 +39,12 @@
           <img class="card-img-top" src="./assets/images/catandme2.png" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">Front-End</h5>
-            <p class="card-text">Current Using Tech-Stac</p>
+            <p class="card-text">Current Using</p>
           </div>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"> <img src="./assets/android-icon-36x36.png" alt="vue"> Vue</li>
-            <li class="list-group-item"> <img src="./assets/android-icon-36x361.png" alt="react"> React</li>
-            <li class="list-group-item" v-if="isDesktop">
-                <img src="./assets/android-icon-36x362.png" alt="js"> JavaScript
-            </li>
-            <li class="list-group-item" v-else>
-                <img src="./assets/android-icon-36x362.png" alt="js"> Java<br>Script
-            </li>
+            <li class="list-group-item"><img src="https://img.shields.io/badge/vue.js-4FC08D?style=flat-square&logo=vue.js&logoColor=white"></li>
+            <li class="list-group-item"><img src="https://img.shields.io/badge/react-61DAFB?style=flat-square&logo=react&logoColor=black"></li>
+            <li class="list-group-item"><img src="https://img.shields.io/badge/bootstrap-7952B3?style=flat-square&logo=bootstrap&logoColor=white"></li>
           </ul>
         </div>
   
@@ -68,9 +63,29 @@
             <p class="tech-stac">Tech-Stac</p>
             <div class="tech-stac-content">
               <ul>
-                <li class="tsc">Front-End:<br>Html, CSS, JS, BootStrap, Vue, React</li>
-                <li class="tsc">Back-End:<br> Node.js, Express, Mysql, Firebase, Tomcat, Java</li>
-                <li class="tsc">Common:<br> Git, Github</li>
+                <li class="tsc">Front-End:<br>
+                  <img src="https://img.shields.io/badge/html5-E34F26?style=flat-square&logo=html5&logoColor=white">
+                  <img src="https://img.shields.io/badge/css-1572B6?style=flat-square&logo=css3&logoColor=white">
+                  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=flat-square&logo=javascript&logoColor=black">
+                  <br>
+                  <img src="https://img.shields.io/badge/bootstrap-7952B3?style=flat-square&logo=bootstrap&logoColor=white">
+                  <img src="https://img.shields.io/badge/vue.js-4FC08D?style=flat-square&logo=vue.js&logoColor=white">
+                  <img src="https://img.shields.io/badge/react-61DAFB?style=flat-square&logo=react&logoColor=black">  
+                </li>
+                <li class="tsc">Back-End:<br>
+                  <img src="https://img.shields.io/badge/node.js-339933?style=flat-square&logo=Node.js&logoColor=white">
+                  <img src="https://img.shields.io/badge/express-000000?style=flat-square&logo=express&logoColor=white">
+                  <img src="https://img.shields.io/badge/mysql-4479A1?style=flat-square&logo=mysql&logoColor=white">
+                  <img src="https://img.shields.io/badge/PHP-777BB4?style=flat-square&logo=php&logoColor=white"/>
+                  <br>
+                  <img src="https://img.shields.io/badge/firebase-FFCA28?style=flat-square&logo=firebase&logoColor=white">
+                  <img src="https://img.shields.io/badge/apache tomcat-F8DC75?style=flat-square&logo=apachetomcat&logoColor=white">
+                  <img src="https://img.shields.io/badge/java-007396?style=flat-square&logo=java&logoColor=white"/>
+                </li>
+                <li class="tsc">Common:<br>
+                  <img src="https://img.shields.io/badge/git-F05032?style=flat-square&logo=git&logoColor=white">
+                  <img src="https://img.shields.io/badge/github-181717?style=flat-square&logo=github&logoColor=white">
+                </li>
               </ul>
             </div> 
         </div>
@@ -79,17 +94,12 @@
         <img class="card-img-top" src="./assets/images/catandme3.png" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">Back-End</h5>
-            <p class="card-text">Current Using Tech-Stac</p>
+            <p class="card-text">Current Using</p>
           </div>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"> <img src="./assets/javamini.png" alt="java"> Java</li>
-            <li class="list-group-item"> <img src="./assets/nodemini.png" alt="node.js"> Node.js</li>
-            <li class="list-group-item" v-if="isDesktop">
-              <img src="./assets/firebasemini.png" alt="firebase"> Firebase
-            </li>
-            <li class="list-group-item" v-else>
-              <img src="./assets/firebasemini.png" alt="firebase"> Fire<br>base
-            </li>
+            <li class="list-group-item"><img src="https://img.shields.io/badge/java-007396?style=flat-square&logo=java&logoColor=white"/></li>
+            <li class="list-group-item"><img src="https://img.shields.io/badge/node.js-339933?style=flat-square&logo=Node.js&logoColor=white"></li>
+            <li class="list-group-item"><img src="https://img.shields.io/badge/firebase-FFCA28?style=flat-square&logo=firebase&logoColor=white"></li>
           </ul>
         </div>
       </div>
