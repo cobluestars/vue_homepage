@@ -7,7 +7,7 @@
       <!-- cardclass 이미지 업로드 인풋 -->
       <input ref="cardClassImageInput" type="file" id="imageUpload" style="display: none" accept="image/*" @change="handleImageUpload($event, 'cardclass')">
       <div class="card-body">
-        <span id="imageclick" class="badge text-bg-secondary">이미지 클릭 시 이미지를 업로드합니다.</span>
+        <div id="imageclick" class="badge text-bg-secondary d-flex align-items-center">이미지를 클릭하면 이미지를 업로드합니다.</div>
         <!-- 제목 입력 필드 -->
         <div class="input-group mb-3">
           <span class="input-group-text" id="basic-addon1">제목</span>
@@ -27,6 +27,7 @@
         <button type="button" id="submit" class="btn btn-success" @click="addMessage">게시</button>
       </div>
     </div>
+
     <hr>
 
     <!-- cardcontext -->
@@ -39,43 +40,63 @@
           <input type="file" class="image-upload" style="display: none" accept="image/*" @change="handleImageUpload($event, message)">
         </div>
         <div class="card-body">
-          <span v-if="message.editing" id="imageclick2" class="badge text-bg-secondary">이미지 클릭 시 이미지를 업로드합니다.</span>
+          <span v-if="message.editing" id="imageclick2" class="badge text-bg-secondary d-flex align-items-center">이미지 클릭 시 이미지를 업로드합니다.</span>
           <!-- 제목 -->
           <h5 v-if="!message.editing" class="card-title">{{ message.title }}</h5>
           <input v-else v-model="message.title" type="text" id="Card title" placeholder="제목을 수정하세요" class="form-control" aria-label="Username" aria-describedby="basic-addon1">
           <hr>
           <!-- 메시지 -->
-          <p v-if="!message.editing" class="card-text">{{ message.text }}</p>
+          <div v-if="!message.editing" class="card-text" style="white-space: pre-line">{{ message.text }}</div> <!--줄바꿈 적용-->
+          <!-- <p v-if="!message.editing" class="card-text">{{ message.text }}</p> -->
           <textarea v-else v-model="message.text" class="form-control" aria-label="With textarea" rows="4" cols="50" placeholder="메시지를 수정하세요"></textarea>
           <!-- 게시 일자 및 시간 -->
           <div class="card-footer text-muted">
             {{ formatDate(message.postedAt) }}
           </div>
-          <!-- 수정 시 비밀번호 입력 필드 -->
-          <div v-if="message.editing" class="col-auto" id="pw">
-            <label for="inputPassword2" class="visually-hidden">Password</label>
-            <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="Password" ref="passwordInput">
-            <span v-if="message.editing" class="badge text-bg-info" id="editingcancel">수정 취소: 틀린 비밀번호 입력 후 수정 버튼을 누르세요.</span>
-          </div>
-          <!-- 삭제 시 비밀번호 입력 필드 -->
-          <div v-if="message.deleting" class="col-auto" id="pw">
-            <label for="inputPassword2" class="visually-hidden">Password</label>
-            <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="비밀번호" ref="passwordInput">
-            <span v-if="message.deleting" class="badge text-bg-info" id="deletingcancel">삭제 취소: 틀린 비밀번호 입력 후 삭제 버튼을 누르세요.</span>
-          </div>
 
-          <!-- 삭제 버튼 -->
-          <a href="#" class="btn btn-dark" id="delete" v-if="!message.editing" @click="deleteMessage(message)">삭제</a>
-          <!-- 수정 버튼 -->
-          <a href="#" class="btn btn-secondary" id="modify" v-if="!message.deleting" @click="toggleEditing(message, $event)">수정</a>
-          <!-- 삭제 버튼 -->
-          <!-- <a href="#" class="btn btn-dark" id="delete" @click="deleteMessage(message)">삭제</a> -->
-          <!-- 수정 버튼 -->
-          <!-- <a href="#" class="btn btn-secondary" id="modify" @click="toggleEditing(message, $event, addMessagePassword)">수정</a> -->
+          <div id="editdelete">
+            <!-- 수정 시 비밀번호 입력 필드 -->
+            <div v-if="message.editing" class="col-auto" id="pw1">
+              <label for="inputPassword2" class="visually-hidden">Password</label>
+              <input v-model="message.password" type="password" class="form-control" id="inputPassword1" placeholder="비밀번호" ref="passwordInput">
+            </div>
+            <div v-if="isDesktop">
+              <span v-if="message.editing" class="badge text-bg-info" id="editingcancel">수정 취소: 틀린 비밀번호 입력 후 수정 버튼을 누르세요.</span>
+            </div>
+            <div class="info-badge" v-else>
+              <div v-if="message.editing" class="badge text-bg-info" id="editingcancel">취소: 틀린 비밀번호 입력,<br>수정 버튼 클릭</div>
+            </div>
+            <!-- 삭제 시 비밀번호 입력 필드 -->
+            <div v-if="message.deleting" class="col-auto" id="pw2">
+              <label for="inputPassword2" class="visually-hidden">Password</label>
+              <input v-model="message.password" type="password" class="form-control" id="inputPassword2" placeholder="비밀번호" ref="passwordInput">
+            </div>
+            <div v-if="isDesktop">
+              <span v-if="message.deleting" class="badge text-bg-info" id="deletingcancel">삭제 취소: 틀린 비밀번호 입력 후 삭제 버튼을 누르세요.</span>
+            </div>
+            <div class="info-badge" v-else>
+              <div v-if="message.deleting" class="badge text-bg-info" id="deletingcancel">취소: 틀린 비밀번호 입력,<br> 삭제 버튼 클릭</div>
+            </div>
+
+            <!-- 삭제 버튼 -->
+            <a href="#" class="btn btn-dark" id="delete" v-if="!message.editing" @click="deleteMessage(message)">삭제</a>
+            <!-- 수정 버튼 -->
+            <a href="#" class="btn btn-secondary" id="modify" v-if="!message.deleting" @click="toggleEditing(message, $event)">수정</a>
+          </div>
         </div>
       </div>
     </ul>
 
+    <!--검색 기능 추가-->
+    <!-- <div id="f5">
+    <span class="badge rounded-pill text-bg-light">새로고침: "/새로고침" 입력 후 검색 클릭</span>
+    </div> -->
+
+    <div id="search" class="input-group mb-3">
+      <button class="btn btn-outline-secondary" type="button" id="button-addon1" @click="Search">검색</button>
+      <input v-model="keyword" type="text" class="form-control" placeholder="검색어 입력" aria-label="Example text with button addon" aria-describedby="button-addon1">
+      <button class="btn btn-outline-secondary" type="button" id="button-addon1" @click="F5"> F5 </button>
+    </div>
     <!-- 페이지 기능 추가 -->
     <nav aria-label="Page navigation example">
       <ul class="pagination justify-content-center">
@@ -125,6 +146,8 @@ export default {
       defaultCardClassImage: require('@/assets/images/catandme.png'),
       currentPage: 1, // 페이지 기능 추가
       addMessagePassword: '', // 새 메시지 추가용 비밀번호를 저장하는 데이터 속성
+      keyword: '', //검색 키워드
+      // updatedCardcontexts: [], // keyword를 포함한 Cardcontexts
     };
   },
 
@@ -142,6 +165,15 @@ export default {
   }, //페이지 기능 추가
 
   mounted() {
+    if (window.innerWidth >= 768) {
+        this.isDesktop = true;
+      } else {
+        this.isDesktop = false;
+      }
+
+    this.updateIsDesktop(); // 초기 실행
+    window.addEventListener('resize', this.updateIsDesktop); // 변경 감지
+
     db.collection('MyData')
       .orderBy('postedAt', 'desc') // postedAt 필드를 내림차순으로 정렬
       .get()
@@ -166,6 +198,10 @@ export default {
   },
 
   methods: {
+    updateIsDesktop() {
+    this.isDesktop = window.innerWidth >= 768;
+    },
+
     formatDate(date) {
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
       return new Intl.DateTimeFormat('ko-KR', options).format(date);
@@ -224,8 +260,32 @@ export default {
       }
     },
 
+    cancelDatabaseUpdate(message) {
+      // 수정 취소 시 이전 데이터로 복원
+      message.title = message.previousTitle;
+      message.text = message.previousText;
+      message.uploadedImageUrl = message.previousUploadedImageUrl;
+
+      // Vue.js에서 데이터 업데이트를 감지하고 화면을 업데이트하도록 호출
+      this.$forceUpdate();
+    },
+
     toggleEditing(message, event) {
-      const previousScrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      const previousScrollTop = document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+      // 이전 값 저장
+      if (!message.previousTitle) {
+        message.previousTitle = message.title;
+      }
+      if (!message.previousText) {
+        message.previousText = message.text;
+      }
+      if (!message.previousUploadedImageUrl) {
+        message.previousUploadedImageUrl = message.uploadedImageUrl;
+      }
+        
+      // Vue.js에서 데이터 업데이트를 감지하고 화면을 업데이트하도록 호출
+      this.$forceUpdate();
 
       // 비밀번호 확인 로직 추가
       const inputPassword = message.password; // 입력한 비밀번호
@@ -247,10 +307,14 @@ export default {
 
         // 스크롤 위치 복원
         this.restoreScrollPosition(previousScrollTop);
+
       } else {
         if (inputPassword === correctPassword) {
           // 수정 완료
           message.editing = false;
+
+          // 스크롤 위치 복원
+          this.restoreScrollPosition(previousScrollTop);
 
           // 수정이 완료되었을 때 Firestore 데이터 업데이트
           db.collection('MyData')
@@ -260,35 +324,58 @@ export default {
               text: message.text,
               uploadedImageUrl: message.uploadedImageUrl,
             })
+
             .then(() => {
               // 스크롤 위치 복원
               this.restoreScrollPosition(previousScrollTop);
               console.log('데이터가 성공적으로 업데이트되었습니다.');
             })
             .catch((error) => {
+
+              // 수정 취소
+              this.cancelDatabaseUpdate(message);
+
+              // 화면 업데이트
+              this.$nextTick(() => {
+                  this.$forceUpdate();
+              });
+
+              // 스크롤 위치 복원
+              this.restoreScrollPosition(previousScrollTop);
               console.error('데이터를 업데이트하는 중 에러 발생: ', error);
             });
         } else {
-          alert('비밀번호가 일치하지 않습니다.');
+          // 스크롤 위치 복원
+          this.restoreScrollPosition(previousScrollTop);
+
+          alert('비밀번호가 일치하지 않습니다. 수정 모드를 종료합니다.');
           // 수정 모드 종료
           message.editing = false;
           // 입력된 비밀번호 초기화
           message.password = '';
-          // 스크롤 위치 복원
-          this.restoreScrollPosition(previousScrollTop);
+
+          // 수정 취소
+          this.cancelDatabaseUpdate(message);
+
+          // 화면 업데이트
+          this.$nextTick(() => {
+              this.$forceUpdate();
+          });
+
         }
       }
     },
-      //틀린 비밀번호를 입력했음에도, 같은 페이지 내에서는 수정이 되어 보이는 버그 해결해야 함.
 
     deleteMessage(message) {
-      const previousScrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      const previousScrollTop = document.documentElement.scrollTop || document.body.scrollTop || 0;
+    
+      // 스크롤 위치 복원
       this.restoreScrollPosition(previousScrollTop);
 
       if (message.deleting) {
+  
         const index = this.cardcontexts.indexOf(message);
         if (index > -1) {
-          this.restoreScrollPosition(previousScrollTop);
           // 삭제 확인 작업을 위해 confirmDeleteMessage 메서드 호출
           this.confirmDeleteMessage(message, previousScrollTop)
             .then(() => {
@@ -300,6 +387,7 @@ export default {
               this.restoreScrollPosition(previousScrollTop);
             });
         }
+    
       } else {
         message.deleting = true;
       }
@@ -332,7 +420,10 @@ export default {
               });
           }
         } else {
-          alert('비밀번호가 일치하지 않습니다.');
+          // 스크롤 위치 복원
+          this.restoreScrollPosition(previousScrollTop);
+
+          alert('비밀번호가 일치하지 않습니다. 삭제 모드를 종료합니다.');
           message.deleting = false; // 삭제 모드 종료
           message.password = ''; // 입력된 비밀번호 초기화
           reject();
@@ -344,7 +435,41 @@ export default {
     restoreScrollPosition(previousScrollTop) {
       setTimeout(() => {
         window.scrollTo(0, previousScrollTop);
-      }, 100); // 100ms 딜레이
+      }, 5);  //스크롤이 위로 올라갔다 내려오는 현상을(스크롤 복원) 0.005초 내에 구현
+    },
+
+    //새로고침
+    F5() {
+      location.reload();
+      return;
+    },
+
+    //검색
+    Search() {
+      const searchKeyword = this.keyword.toLowerCase();
+      
+      // 키워드가 비어있다가 무언가 입력되었을 때, 검색 기능을 실행하지 않음
+      if (searchKeyword === '') {
+        return;
+      }
+      
+      const filteredCardcontexts = this.cardcontexts.filter((message) => {
+        const lowerCaseTitle = message.title.toLowerCase();
+        const lowerCaseText = message.text.toLowerCase();
+        return lowerCaseTitle.includes(searchKeyword) || lowerCaseText.includes(searchKeyword);
+      });
+
+      if (filteredCardcontexts.length === 0) {
+        alert('검색 결과가 없습니다.');
+      }
+
+      // 검색된 게시물로 카드 목록을 갱신.
+      this.pagedCardcontexts.splice(0, this.pagedCardcontexts.length, ...filteredCardcontexts);
+
+      // 검색 결과에 따라 페이지를 초기화.
+      this.currentPage = 1;
+
+      this.keyword = '';
     },
 
     // 페이지 이동
@@ -356,7 +481,9 @@ export default {
 };
 </script>
   
-  <style scoped>
+<style scoped>
+  @media screen and (min-width: 768px) {
+
   .my-content {
     max-width: 900px;
     margin: 0 auto;
@@ -371,7 +498,7 @@ export default {
   }
 
   #imageclick {
-    margin-left: 12px;
+    margin-left: 3px;
     margin-bottom: 20px;
   }
 
@@ -383,22 +510,6 @@ export default {
 
   #submit {
     float: right;
-  }
-  
-  .upload-image-container {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-  }
-  
-  .upload-image-container input[type="file"] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
   }
   
   textarea {
@@ -428,8 +539,12 @@ export default {
   }
 
   #imageclick2 {
-    margin-left: 52px;
+    margin: 0 auto;
     margin-bottom: 20px;
+  }
+
+  .card-text {
+    margin-bottom: 14px;
   }
 
   #modify {
@@ -443,7 +558,7 @@ export default {
     float: right;
     margin: 5px;
   }
-  
+
   #editingcancel {
     position: relative;
     margin: auto;
@@ -457,5 +572,115 @@ export default {
   li {
     margin-bottom: 10px;
   }
-  </style>
+
+  #search {
+    width: 300px;
+    margin: 0 auto;
+  }
+
+  #f5 {
+    margin: 2px;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .my-content {
+    max-width: 100%;
+    margin: 0 auto;
+    color: white;
+    padding: 20px;
+    position: relative;
+  }
   
+  #cardclass {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  #imageclick {
+   margin-bottom: 20px;
+   text-align: center;
+  }
+
+  #pw {
+    float: left;
+    width: 160px;
+    margin-top: 4px;
+  }
+
+  #submit {
+    float: right;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    padding: 10px 20px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .card-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  #cardcontext {
+    width: 100%;
+    margin: 20px;
+  }
+
+  #imageclick2 {
+    margin-bottom: 20px;
+  }
+
+  .card-text {
+    margin-bottom: 14px;
+  }
+
+  #inputpassword1 {
+    text-align: center;
+  }
+
+  #inputpassword2 {
+    text-align: center;
+  }
+
+  #modify {
+    position: relative;
+    float: right;
+    margin: 3px;
+  }
+  
+  #delete {
+    position: relative;
+    float: right;
+    margin: 3px;
+  }
+
+  .info-badge {
+    display: inline-block;
+    position: relative;
+    margin-top: 5px;
+  }
+
+  li {
+    margin-bottom: 10px;
+  }
+
+  #f5 {
+    margin: 2px;
+    text-align: center;
+  }
+}
+
+</style>

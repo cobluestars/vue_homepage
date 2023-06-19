@@ -15,13 +15,13 @@
         <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
             <div class="carousel-item active">
-              <img src="./assets/images/catandme.png" class="d-block w-100" alt="cam" height="600px">
+              <img src="./assets/images/catandme.png" class="d-block w-100" alt="cam">
             </div>
             <div class="carousel-item">
-              <img src="./assets/images/catandme2.png" class="d-block w-100" alt="cam2" height="600px">
+              <img src="./assets/images/catandme2.png" class="d-block w-100" alt="cam2">
             </div>
             <div class="carousel-item">
-              <img src="./assets/images/catandme3.png" class="d-block w-100" alt="cam3" height="600px">
+              <img src="./assets/images/catandme3.png" class="d-block w-100" alt="cam3">
             </div>
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
@@ -59,10 +59,11 @@
   </script>
   
   <style scoped>
+  @media screen and (min-width: 768px) {
   body {
-      box-sizing: border-box;
-      width: 940px;
-      margin: 0px auto;
+    box-sizing: border-box;
+    width: 940px;
+    margin: 0px auto;
   }
   /* body {
     width: 940px;
@@ -77,7 +78,7 @@
     height: 50px;
     padding-top: 10px;
     top: 0px;
-    z-index: 2;
+    z-index: 5;
   }
   
   #nav .router-link {
@@ -91,7 +92,7 @@
   #nav .router-link:hover {
     font-weight: 800;
   }
-
+  
   #nav li a {
     color: #fff;
     text-decoration: none;
@@ -102,8 +103,7 @@
   }
   
   #header {
-    position: sticky;
-    top: 45px;
+    position: relative;
     color: #fff;
     font-size: 4em;
     z-index: 1;
@@ -112,21 +112,73 @@
     margin-bottom: 20px;
     margin-top: 40px;
   }
-  
-  #header > h1 {
-    margin: 0px;
+
+  .d-block w-100 {
+    width: calc(var(--nav-height));
   }
-    
+
   #content {
     float: left;
-    width: 900px;
+    width: 100%;
     padding: 20px;
     margin-bottom: 20px;
-    margin: 0 20px;
     border: 1px solid rgb(186, 186, 186);
     border-radius: 5px;
     position: relative; /*6.5 */
+    z-index: 3;
+  }
+}
+
+@media screen and (max-width: 767px) {
+
+  body {
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  #nav {
+    width: 100%;
+    background: #000;
+    position: fixed;
+    height: 50px;
+    padding-top: 10px;
+    top: 0px;
+    z-index: 100;
+  }
+
+  #nav .router-link {
+    text-align: center;
+    margin-left: 2.2em;
+    display: inline;
+    list-style: none;
+    text-decoration: none;
+    font-size: small;
+    color: white;
   }
   
-</style>
+  #nav .router-link:hover {
+    font-weight: 800;
+  }
+
+  #header {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+    margin-top: 48px;
+  }
+
+  #content {
+    float: left;
+    width: 100%;
+    padding: 20px;
+    margin-bottom: 20px;
+    margin: 0 auto;
+    border: 1px solid rgb(186, 186, 186);
+    border-radius: 5px;
+    position: relative; /*6.5 */
+    z-index: 2;
+  }
+}
+
+  </style>
   
