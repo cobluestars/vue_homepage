@@ -260,30 +260,28 @@ export default {
       }
     },
 
-    cancelDatabaseUpdate(message) {
-      // 수정 취소 시 이전 데이터로 복원
-      message.title = message.previousTitle;
-      message.text = message.previousText;
-      message.uploadedImageUrl = message.previousUploadedImageUrl;
+    async reloadMessageFromDatabase(message) {
+      try {
+        const snapshot = await db.collection('MyData').doc(message.id).get();
+        const data = snapshot.data();
 
-      // Vue.js에서 데이터 업데이트를 감지하고 화면을 업데이트하도록 호출
-      this.$forceUpdate();
+        // DB에서 가져온 데이터로 화면 업데이트
+        message.title = data.title;
+        message.text = data.text;
+        message.uploadedImageUrl = data.uploadedImageUrl;
+
+        // Vue.js에서 데이터 업데이트를 감지하고 화면을 업데이트하도록 호출
+        this.$forceUpdate();
+
+        console.log('데이터가 성공적으로 다시 불러와졌습니다.');
+      } catch (error) {
+        console.error('데이터를 다시 불러오는 중 에러 발생: ', error);
+      }
     },
 
     toggleEditing(message, event) {
       const previousScrollTop = document.documentElement.scrollTop || document.body.scrollTop || 0;
 
-      // 이전 값 저장
-      if (!message.previousTitle) {
-        message.previousTitle = message.title;
-      }
-      if (!message.previousText) {
-        message.previousText = message.text;
-      }
-      if (!message.previousUploadedImageUrl) {
-        message.previousUploadedImageUrl = message.uploadedImageUrl;
-      }
-        
       // Vue.js에서 데이터 업데이트를 감지하고 화면을 업데이트하도록 호출
       this.$forceUpdate();
 
@@ -324,20 +322,18 @@ export default {
               text: message.text,
               uploadedImageUrl: message.uploadedImageUrl,
             })
-
             .then(() => {
               // 스크롤 위치 복원
               this.restoreScrollPosition(previousScrollTop);
               console.log('데이터가 성공적으로 업데이트되었습니다.');
             })
             .catch((error) => {
-
               // 수정 취소
-              this.cancelDatabaseUpdate(message);
+              this.reloadMessageFromDatabase(message);
 
               // 화면 업데이트
               this.$nextTick(() => {
-                  this.$forceUpdate();
+                this.$forceUpdate();
               });
 
               // 스크롤 위치 복원
@@ -355,13 +351,12 @@ export default {
           message.password = '';
 
           // 수정 취소
-          this.cancelDatabaseUpdate(message);
+          this.reloadMessageFromDatabase(message);
 
           // 화면 업데이트
           this.$nextTick(() => {
-              this.$forceUpdate();
+            this.$forceUpdate();
           });
-
         }
       }
     },
